@@ -287,3 +287,138 @@ table.data tr.best td { font-weight: 650; }
   .calendar-head .row { flex: 1 1 100% !important; flex-wrap: wrap; }
   .calendar-head .row select { width: 100% !important; flex: 1 1 100%; }
 }
+
+
+/* Imported rail styling and resizer */
+@media (min-width: 861px) { :root { --rail: 320px; } }
+
+.rail {
+  overflow-x: hidden;
+  padding: 18px 14px 40px;
+  background:
+    radial-gradient(300px 260px at 0% 0%, color-mix(in srgb, #e8721c 11%, transparent), transparent 70%),
+    radial-gradient(260px 220px at 100% 100%, color-mix(in srgb, #6a3ea1 9%, transparent), transparent 70%),
+    var(--panel);
+  border-right: 1px solid color-mix(in srgb, #e8721c 22%, var(--rule));
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, #e8721c 45%, transparent) transparent;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 10px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 10px), transparent);
+}
+.rail::-webkit-scrollbar { width: 6px; }
+.rail::-webkit-scrollbar-thumb { background: color-mix(in srgb, #e8721c 45%, transparent); border-radius: 3px; }
+
+/* Her bölüm bir kart */
+.rail .field {
+  margin: 0 0 10px;
+  padding: 12px;
+  background: color-mix(in srgb, var(--wash) 45%, transparent);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.rail .field:hover,
+.rail .field:focus-within {
+  border-color: color-mix(in srgb, #e8721c 40%, var(--rule));
+  box-shadow: 0 0 0 1px color-mix(in srgb, #e8721c 12%, transparent), 0 6px 18px rgba(0, 0, 0, .14);
+}
+
+/* Bölüm başlıkları */
+.rail .field > label, .rail .field > .label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--slate); margin-bottom: 10px;
+}
+.rail .field > label::before, .rail .field > .label::before {
+  content: ""; flex: none; width: 3px; height: 13px; border-radius: 2px;
+  background: linear-gradient(180deg, #ffb347, #e8721c);
+  box-shadow: 0 0 8px rgba(232, 114, 28, .55);
+}
+.rail .hint, .rail .field .hint { font-size: 12px; line-height: 1.5; color: var(--slate); }
+
+/* Girişler */
+.rail select, .rail input[type="date"], .rail input[type="text"], .rail input[type="number"], .rail input[type="password"] {
+  border-radius: 9px; background: var(--paper); border: 1px solid var(--rule-strong); padding: 8px 10px;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.rail select:hover:not(:disabled), .rail input:hover:not(:disabled) { border-color: #e8721c; }
+.rail select:focus, .rail input:focus {
+  border-color: #e8721c; outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #e8721c 25%, transparent);
+}
+.rail input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; }
+.rail input[type="range"] { accent-color: #e8721c; padding: 0; background: none; border: 0; box-shadow: none; }
+.rail input[type="checkbox"], .rail input[type="radio"] { accent-color: #e8721c; }
+
+/* Düğmeler */
+.rail .btn {
+  border-radius: 9px; font-weight: 600; background: var(--paper);
+  transition: transform .12s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.rail .btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, #e8721c 12%, var(--paper));
+  border-color: #e8721c;
+  box-shadow: 0 4px 14px color-mix(in srgb, #e8721c 22%, transparent);
+}
+.rail .btn.primary { background: linear-gradient(135deg, #e8721c, #a12818); color: #fff; border-color: transparent; }
+.rail .btn-row .btn { flex: 1 1 auto; }
+
+/* "Point and radius" kutusu */
+.rail .point-radius {
+  border: 1px dashed color-mix(in srgb, #e8721c 35%, var(--rule-strong));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--paper) 55%, transparent);
+  padding: 8px 10px 10px;
+}
+.rail .point-radius legend {
+  color: var(--heat-2); font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+}
+
+/* Platform seçimi: tıklanabilir etiketler */
+.rail .checks { grid-template-columns: 1fr; gap: 6px; }
+.rail .checks label {
+  min-width: 0; overflow-wrap: anywhere; cursor: pointer;
+  padding: 7px 10px; border: 1px solid var(--rule); border-radius: 9px; background: var(--paper);
+  transition: border-color .15s ease, background .15s ease, transform .12s ease;
+}
+.rail .checks label:hover { border-color: #e8721c; transform: translateX(2px); }
+.rail .checks label:has(input:checked) {
+  border-color: color-mix(in srgb, #e8721c 65%, var(--rule));
+  background: color-mix(in srgb, #e8721c 11%, var(--paper));
+}
+.rail .checks .swatch { width: 11px; height: 11px; border-radius: 50%; box-shadow: 0 0 6px currentColor; }
+
+/* Segmentli düğmeler */
+.rail .seg { border-radius: 9px; border-color: var(--rule-strong); }
+.rail .seg button { transition: background .15s ease; }
+.rail .seg button:hover:not([aria-pressed="true"]) { background: color-mix(in srgb, #e8721c 12%, transparent); }
+.rail .seg button[aria-pressed="true"] { background: linear-gradient(135deg, #e8721c, #a12818); color: #fff; }
+
+/* Açılır bölüm */
+.rail details.rail-more summary { color: var(--heat-2); font-weight: 600; padding: 4px 0; }
+
+@media (max-width: 860px) {
+  .rail { -webkit-mask-image: none; mask-image: none; padding: 14px 12px 20px; }
+}
+
+/* Resizable filter sidebar */
+.layout { position: relative; }
+.rail-resizer {
+  position: absolute; top: 0; bottom: 0;
+  left: calc(var(--rail) - 5px); width: 10px;
+  cursor: col-resize; z-index: 20; touch-action: none;
+}
+.rail-resizer::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 4px; width: 2px;
+  background: transparent;
+  transition: background .15s ease, box-shadow .15s ease;
+}
+.rail-resizer:hover::after,
+.rail-resizer.dragging::after,
+.rail-resizer:focus-visible::after {
+  background: #e8721c;
+  box-shadow: 0 0 10px rgba(232, 114, 28, .7);
+}
+.rail-resizer:focus-visible { outline: none; }
+@media (max-width: 860px) { .rail-resizer { display: none; } }
