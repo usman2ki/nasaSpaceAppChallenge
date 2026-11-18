@@ -4,12 +4,15 @@ import { Calendar, CalendarLegend, Patterns } from "./components/Calendar";
 import { Chart, toMs } from "./components/Chart";
 import { CompareView, StatusChip } from "./components/CompareView";
 import { DetailPanel } from "./components/DetailPanel";
+import GlobePanel from "./components/GlobePanel";
 import { ImportView } from "./components/ImportView";
+import { InfoPanel } from "./components/InfoPanel";
 import { KeyFigures } from "./components/KeyFigures";
 import { MapView } from "./components/MapView";
 import { MethodView } from "./components/MethodView";
 import { AlertsView } from "./components/AlertsView";
 import { METRICS, Rail, UiState } from "./components/Rail";
+import RailResizer from "./components/RailResizer";
 import { ValidationView } from "./components/ValidationView";
 import { api, SelectionReq } from "./lib/api";
 import { CalCell, harmonizedCells, rawCells, yearsBetween } from "./lib/calendar";
@@ -191,7 +194,7 @@ export function App() {
       </div>
     );
   }
-  if (!meta || !ui || !req) return <div className="state" style={{ padding: 40 }}>Loading Ember Atlas…</div>;
+  if (!meta || !ui || !req) return <div className="state loading-screen" style={{ padding: 40 }}><span className="flame" aria-hidden="true">🔥</span> Loading Ember Atlas…</div>;
 
   const synthetic = ui.dataset === "synthetic";
   const availablePlatforms = Array.from(new Set((meta.datasets[ui.dataset].series as any[]).map((s) => s.platform)));
@@ -231,10 +234,18 @@ export function App() {
       )}
       {!online && <div className="offline-band" role="status">You are offline. Basemap tiles and FIRMS downloads are unavailable; analysis against a local server still works.</div>}
 
+      <InfoPanel />
       <div className="layout">
         <Rail ui={ui} set={(p) => { set(p); if (p.aoi !== undefined || p.dataset) { setSelected(null); setPickedCell(null); } }} meta={meta} availablePlatforms={availablePlatforms}
           onStartDraw={() => setDrawing(true)} drawing={drawing} aoiError={aoiError} setAoiError={setAoiError} extent={extentOf(meta, ui.dataset)} />
+        <RailResizer />
         <main className="main" id="main">
+          <GlobePanel
+            aoi={summaryQ.data?.aoi.geometry || null}
+            cells={cellsQ.data}
+            platforms={ui.platforms}
+            colorBy={effectiveSeries === "harmonized" ? ui.reference : effectiveSeries}
+          />
           {!hasData ? (
             <section className="panel state">
               <h3>No {synthetic ? "synthetic" : "real"} data imported yet</h3>
@@ -282,7 +293,7 @@ export function App() {
               )}
               <KeyFigures kf={kfQ.data} loading={kfQ.loading} error={kfQ.error} year={kfY} years={years} setYear={setKfYear} synthetic={synthetic} onRetry={kfQ.reload} />
               {summaryQ.error && <div className="state error">{summaryQ.error.message} <button className="btn" onClick={summaryQ.reload}>Retry</button></div>}
-              {summaryQ.loading && !summaryFresh && <div className="state">Aggregating detections to the {ui.gridKm} km grid…</div>}
+              {summaryQ.loading && !summaryFresh && <div className="state loading-inline"><span className="flame" aria-hidden="true">🔥</span> Aggregating detections to the {ui.gridKm} km grid…</div>}
               {summaryQ.data && summaryFresh && (
                 <>
                   <Calendar cells={cells} years={years} window={ui.window} selected={selected} onSelect={setSelected} signals={signals} unit={unit} />

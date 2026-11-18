@@ -9,6 +9,12 @@ import { heatColor, PLATFORM_COLOR } from "../lib/scales";
 
 const R = 6378137;
 
+// Koyu temada koyu altlık, açık temada açık altlık
+const tileStyle = () =>
+  window.matchMedia("(prefers-color-scheme: dark)").matches && document.documentElement.getAttribute("data-theme") !== "light"
+    ? "dark_all"
+    : "light_all";
+
 interface Props {
   aoi: any | null; // GeoJSON geometry
   cells: any | null; // FeatureCollection with raw_*/q_* properties
@@ -140,6 +146,7 @@ export function MapView(props: Props) {
     if ((x1 - x0 + 1) * (y1 - y0 + 1) > 120) return [];
     const lonOf = (x: number) => (x / n) * 360 - 180;
     const latOf = (y: number) => (Math.atan(Math.sinh(Math.PI * (1 - (2 * y) / n))) * 180) / Math.PI;
+    const style = tileStyle();
     const out = [];
     for (let x = x0; x <= x1; x++) {
       for (let y = y0; y <= y1; y++) {
@@ -147,7 +154,14 @@ export function MapView(props: Props) {
         const b = eff([lonOf(x + 1), latOf(y + 1)]);
         if (!a || !b || b[0] - a[0] <= 0 || b[1] - a[1] <= 0 || b[0] - a[0] > width * 4) continue;
         const wx = ((x % n) + n) % n;
-        out.push({ key: `${zl}/${x}/${y}`, href: `https://tile.openstreetmap.org/${zl}/${wx}/${y}.png`, x: a[0], y: a[1], w: b[0] - a[0], h: b[1] - a[1] });
+        out.push({
+          key: `${style}/${zl}/${x}/${y}`,
+          href: `https://a.basemaps.cartocdn.com/${style}/${zl}/${wx}/${y}.png`,
+          x: a[0],
+          y: a[1],
+          w: b[0] - a[0],
+          h: b[1] - a[1],
+        });
       }
     }
     return out;
@@ -254,7 +268,7 @@ export function MapView(props: Props) {
             </g>
           )}
         </svg>
-        {tiles.length > 0 && <div className="attribution">© OpenStreetMap contributors</div>}
+        {tiles.length > 0 && <div className="attribution">© OpenStreetMap contributors © CARTO</div>}
       </div>
       {drawing && (
         <div className="map-toolbar" style={{ marginTop: 8 }}>
